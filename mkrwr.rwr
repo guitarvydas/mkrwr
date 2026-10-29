@@ -70,6 +70,4 @@ operator [ _96] = ‛«_96»’
 punctuation [ _101] = ‛«_101»’
 NemptyListOf [ elem _102+] = ‛«elem»«_102»’
 NemptyListOf2 [ sep elem] = ‛«sep»«elem»’
-
-ListOf [seq sep] = ‛«seq»’
 }

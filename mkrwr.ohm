@@ -125,7 +125,4 @@ Ohm {
 
   NemptyListOf<elem, sep> = elem NemptyListOf2<elem, sep>+
   NemptyListOf2<elem, sep> = sep elem
-
-  ListOf<elem, sep> = NemptyListOf<elem, sep>
-    | EmptyListOf<elem, sep>
 }

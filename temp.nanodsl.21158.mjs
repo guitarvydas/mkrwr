@@ -525,11 +525,6 @@ enter_rule ("NemptyListOf2");
     set_return (`${sep.rwr ()}${elem.rwr ()}`);
 return exit_rule ("NemptyListOf2");
 },
-NonemptyListOf : function (x,) {
-enter_rule ("NonemptyListOf");
-    set_return (`${x.rwr ()}`);
-return exit_rule ("NonemptyListOf");
-},
 _terminal: function () { return this.sourceString; },
 _iter: function (...children) { return children.map(c => c.rwr ()); }
 }
