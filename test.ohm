@@ -1,0 +1,127 @@
+scn {
+  Main = DI_Section Implementation_Section Type_Section
+
+  DI_Section = "#" "DI" (Subroutine | GlobalVariable)+
+  Implementation_Section = "#" "implementation" Subroutine+
+  Type_Section = "#" "types" any+ end
+
+  Subroutine = "λ" name Formals Return_type? Scope
+  Scope = "⎨" ScopedNameDef? Action "⎬"
+
+  GlobalVariable = name "⇐" Expr
+  
+  ScopedNameDef =
+    | ScopedSynonymDef -- synonym
+    | SlotAssignment -- assignslot
+  ScopedSynonymDef =
+    | StackDeconstruction DEF_op Expr -- deconstruction
+    | ScopedVarName DEF_op Expr -- varname
+  SlotAssignment =
+    | SlotReference (#"," SlotReference)* "⇐" Expr
+  SlotReference = name FieldRef_rec?
+  FieldRef_rec = "." name FieldRef_rec?
+  ScopedVarName = name
+
+  Formals = "(" FormalName* ")"
+  FormalName = name ","?
+  
+  Return_type = "⇒" name ("," name)*
+
+  Action =
+    | Scope -- scope
+    | Choice -- choice
+    | Return -- return
+    | Fresh Action -- fresh
+    | "𝑎𝑠𝑠𝑒𝑟𝑡" Expr Action -- assert
+    | Call Action -- call
+
+  Fresh = name "ᵅ" Actuals
+  Predicate = name "ˀ" Actuals
+
+  Return =  "⇒" Expr ("," Expr)*
+
+  Call =
+    | Predicate -- pred
+    | name Actuals -- call
+  Actuals = "(" (tag? Expr ","?)* ")"
+
+  Choice = "⎡" ChoiceClause+ ElseClause? "⎦"
+
+  ChoiceClause = "・" Boolean_expr "◦" Action
+  ElseClause = "・" "◦" Action
+
+  Boolean_expr = Expr
+  Expr =
+    | Expr "𝒶𝓃𝒹" Expr -- and
+    | "1" "+" Expr -- inc
+    | StackDeconstruction DEF_op Expr -- deconstruction_eq
+    | Fresh -- fresh
+    | Call_and_Await_Result -- call_and_await
+    | SlotReference EQ_op Expr -- slotrefeq
+    | name "ˀ" -- is_type
+    | Choice -- choice
+    | Expr "⫶" Expr -- comma_expr
+    | Call -- call
+    | StackCONStruction -- cons
+    | Expr "/" "𝓉ℴ𝓅" -- top
+    | Expr "/" "𝓇ℯ𝓂" -- rem
+    | constant -- const
+    | SlotReference -- slotref
+
+  Call_and_Await_Result = Call
+
+  StackDeconstruction =
+    | "[" "_" "|" Expr "]" -- cdr
+    | "[" StackTop "|" "_" "]" -- car
+    | "[" StackTop "|" Expr "]" -- cons
+  StackCONStruction = "[" StackTop "|" Expr "]"
+
+  StackTop =
+    | "[" StackCONStruction "]" -- nested
+    | Expr -- simple
+
+  constant =
+    | "⟪" applySyntactic<ConstantListInnard>* "⟫" -- constantlist
+    | "𝓕𝒶𝓁𝓈ℯ" #space -- false
+    | "𝒯𝓇𝓊ℯ" #space -- true
+    | "𝜙" #space  -- nothing
+    | string -- string
+    | number -- number
+    | "⁼" name -- symbol
+
+  ConstantListInnard =  Expr ","?
+  
+  keyword = constant | reserved_keyword
+
+  reserved_keyword =
+    | "𝒶𝓃𝒹" #space -- and
+    | "𝒹ℯ𝒻𝓈𝓉𝓇𝓊𝒸𝓉" #space -- defstruct
+    | "⇒" #space -- defreturn
+    | "⇐" #space -- assignslot
+    | "≡ˀ" #space -- macroequiv
+
+  name = ~keyword id
+  id = firstLetter followingLetter* #space?
+  firstLetter = ~reserved_unicode_character (letter | "'" | "-" | "?" | math_symbol | unicode_subscript | unicode_superscript)
+  followingLetter =
+    | firstLetter -- firstletter
+    | digit  -- digit
+  math_symbol = "\u{1d400}".."\u{1d7ff}"
+
+  tag = "‘" name "’"
+  
+  reserved_unicode_character = "ˀ" | "ᵅ" | "." | "・" | "◦" | "≡" | "⇒" | "⇐"
+  EQ_op = "≡ˀ"
+  DEF_op = ~EQ_op "≡"
+
+  unicode_superscript = "\u{00B0}" .. "\u{00BF}" | "\u{2070}" .. "\u{207F}"
+  unicode_subscript = "\u{2080}" .. "\u{209F}"
+
+  string = "\"" (~"\"" any)* "\""
+  number = digit+
+
+  jscomment = "//" (~#nl any)* #nl
+  nl = "\n"
+  space += jscomment
+}
+
