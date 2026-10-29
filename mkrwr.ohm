@@ -26,7 +26,7 @@ Ohm {
 
   OverrideTopLevelTerm
     = "..."  -- superSplice
-    | TopLevelTermWithoutCaseName
+    | TopLevelTermWithoutCaseName -- default
 
   Formals
     = "<" ListOf<ident, ","> ">"
@@ -41,16 +41,16 @@ Ohm {
     = Pred "*"  -- star
     | Pred "+"  -- plus
     | Pred "?"  -- opt
-    | Pred
+    | Pred      -- default
 
   Pred
     = "~" Lex  -- not
     | "&" Lex  -- lookahead
-    | Lex
+    | Lex      -- default
 
   Lex
     = "#" Base  -- lex
-    | Base
+    | Base      -- default
 
   Base
     = ident  Params ~(ruleDescr? ("=" | ":=" | "+=")) -- application
@@ -75,12 +75,12 @@ Ohm {
     = nameFirst nameRest*
 
   nameFirst
-    = "_"
-    | letter
+    = ( "_"
+    | letter )
 
   nameRest
-    = "_"
-    | alnum
+    = ( "_"
+    | alnum )
 
   ident  (an identifier)
     = name
@@ -92,8 +92,8 @@ Ohm {
     = "\"" terminalChar "\""
 
   terminalChar
-    = escapeChar
-      | ~"\\" ~"\"" ~"\n" "\u{0}".."\u{10FFFF}"
+    = ( escapeChar
+      | ~"\\" ~"\"" ~"\n" "\u{0}".."\u{10FFFF}" )
 
   escapeChar  (an escape sequence)
     = "\\\\"                                     -- backslash
@@ -117,12 +117,15 @@ Ohm {
 
   tokens = token*
 
-  token = caseName | comment | ident | operator | punctuation | terminal | any
+  token = ( caseName | comment | ident | operator | punctuation | terminal | any )
 
-  operator = "<:" | "=" | ":=" | "+=" | "*" | "+" | "?" | "~" | "&"
+  operator = ( "<:" | "=" | ":=" | "+=" | "*" | "+" | "?" | "~" | "&" )
 
-  punctuation = "<" | ">" | "," | "--"
+  punctuation = ( "<" | ">" | "," | "--" )
 
   NemptyListOf<elem, sep> = elem NemptyListOf2<elem, sep>+
   NemptyListOf2<elem, sep> = sep elem
+
+  ListOf<elem, sep> = NemptyListOf<elem, sep>
+    | EmptyListOf<elem, sep>
 }

@@ -1,95 +1,75 @@
-⎨
-⎬
 %rewrite Ohm {
 
-  Grammars [Grammar*] = ‛«Grammar»’
+Grammars [ Grammar*] = ‛«Grammar»’
+Grammar [ ident SuperGrammar? _1 Rule* _2] = ‛«ident»«SuperGrammar»«_1»«Rule»«_2»’
+SuperGrammar [ _3 ident] = ‛«_3»«ident»’
 
-  Grammar [ident SuperGrammar? lb Rule* rb] = ‛⎨asrulename (ident)⎬«SuperGrammar» {\n«Rule»\n}’
+Rule_define [ ident Formals? ruleDescr? _4 RuleBody] =‛«ident»«Formals»«ruleDescr»«_4»«RuleBody»’
+Rule_override [ ident Formals? _5 OverrideRuleBody] =‛«ident»«Formals»«_5»«OverrideRuleBody»’
+Rule_extend [ ident Formals? _6 RuleBody] =‛«ident»«Formals»«_6»«RuleBody»’
 
-  SuperGrammar [_ltc ident] = ‛«ltc»«ident»’
+RuleBody_toplevelcasebranch [ _7? _9] =‛«_7»«_9»’
+RuleBody_seq [ _10? TopLevelTermWithoutCaseName] =‛«_10»«TopLevelTermWithoutCaseName»’
+TopLevelTermWithCaseName [ Seq caseName] = ‛«Seq»«caseName»’
+TopLevelTermWithoutCaseName [ Seq] = ‛«Seq»’
+OverrideRuleBody [ _12? _14] = ‛«_12»«_14»’
 
-  Rule_define [ident Formals? ruleDescr? _eq RuleBody] ‛⎨setrule (ident.rwr (), Formals.rwr (), ruleDescr.rwr ())⎬’ = ‛«RuleBody»’
-  Rule_override [ident Formals? _ceq RuleBody]  ‛⎨setrule (ident.rwr (), Formals.rwr (), ""⎬’ = ‛«RuleBody»’
-  Rule_extend [ident Formals? _peq RuleBody]  ‛⎨setrule (ident.rwr (), Formals.rwr (), "")»’ = ‛«RuleBody»’
+OverrideTopLevelTerm_superSplice [ _15] =‛«_15»’
+OverrideTopLevelTerm_default [ TopLevelTermWithoutCaseName] =‛«TopLevelTermWithoutCaseName»’
+Formals [ _16 _18 _19] = ‛«_16»«_18»«_19»’
+Params [ _20 _22 _23] = ‛«_20»«_22»«_23»’
+Seq [ Iter*] = ‛«Iter»’
 
-  RuleBody_toplevelcasebranch [_bar? TopLevelTerm_list] = ‛\n«TopLevelTerm_list»’
-  RuleBody_seq [_bar? TopLevelTerm_list] = ‛«TopLevelTerm_list»’
+Iter_star [ Pred _24] =‛«Pred»«_24»’
+Iter_plus [ Pred _25] =‛«Pred»«_25»’
+Iter_opt [ Pred _26] =‛«Pred»«_26»’
+Iter_default [ Pred] =‛«Pred»’
 
-  TopLevelTermWithCaseName [Seq caseName] = ‛\n⎨asrulename (_.getrulename () + "_" + caseName)» [⎨asargs (Seq)»] =\‛⎨asrewrite (Seq)»\’’
-  TopLevelTermWithoutCaseName [Seq] =  ‛\n⎨asrulename (_.getrulename ())» [⎨asargs (Seq)»] = \‛⎨asrewrite (Seq)»\’’
+Pred_not [ _27 Lex] =‛«_27»«Lex»’
+Pred_lookahead [ _28 Lex] =‛«_28»«Lex»’
+Pred_default [ Lex] =‛«Lex»’
 
-  OverrideRuleBody [_bar? OverrideTopLevelTerm_list] = ‛«OverrideTopLevelTerm_list»’
+Lex_lex [ _29 Base] =‛«_29»«Base»’
+Lex_default [ Base] =‛«Base»’
 
-  OverrideTopLevelTerm_superSplice [_ddd] = ‛«_ddd»’
-  OverrideTopLevelTerm [tlt] = ‛«tlt»’
+Base_application [ ident Params] =‛«ident»«Params»’
+Base_simple [ ident] =‛«ident»’
+Base_range [ oneCharTerminal _38 oneCharTerminal2] =‛«oneCharTerminal»«_38»«oneCharTerminal2»’
+Base_terminal [ terminal] =‛«terminal»’
+Base_parenalt [ _39 Seq OrSeq+ _40] =‛«_39»«Seq»«OrSeq»«_40»’
+Base_parenseq [ _41 Seq _42] =‛«_41»«Seq»«_42»’
+OrSeq [ _43 Seq] = ‛«_43»«Seq»’
+ruleDescr [ _44 ruleDescrText _45] = ‛«_44»«ruleDescrText»«_45»’
+ruleDescrText [  any*] = ‛«any»’
+caseName [ _47  space* name  space2* _52] = ‛«_47»«space»«name»«space2»«_52»’
+name [ nameFirst nameRest*] = ‛«nameFirst»«nameRest»’
+nameFirst [ _54] = ‛«_54»’
+nameRest [ _56] = ‛«_56»’
+ident [ name] = ‛«name»’
+terminal [ _57 terminalChar* _58] = ‛«_57»«terminalChar»«_58»’
+oneCharTerminal [ _59 terminalChar _60] = ‛«_59»«terminalChar»«_60»’
+terminalChar [ _67] = ‛«_67»’
 
-  Formals [lb ident_list rb] = ‛«lb»«ident_list»«rb»’
+escapeChar_backslash [ _68] =‛«_68»’
+escapeChar_doubleQuote [ _69] =‛«_69»’
+escapeChar_singleQuote [ _70] =‛«_70»’
+escapeChar_backspace [ _71] =‛«_71»’
+escapeChar_lineFeed [ _72] =‛«_72»’
+escapeChar_carriageReturn [ _73] =‛«_73»’
+escapeChar_tab [ _74] =‛«_74»’
+escapeChar_unicodeCodePoint [ _75 hexDigit hexDigit2? hexDigit3? hexDigit4? hexDigit5? hexDigit6? _76] =‛«_75»«hexDigit»«hexDigit2»«hexDigit3»«hexDigit4»«hexDigit5»«hexDigit6»«_76»’
+escapeChar_unicodeEscape [ _77 hexDigit hexDigit2 hexDigit3 hexDigit4] =‛«_77»«hexDigit»«hexDigit2»«hexDigit3»«hexDigit4»’
+escapeChar_hexEscape [ _78 hexDigit hexDigit2] =‛«_78»«hexDigit»«hexDigit2»’
+space [ comment] = ‛«comment»’
 
-  Params [lb Seq_list rb] = ‛«lb»«Seq_list»«rb»’
+comment_singleLine [ _79  any* _82] =‛«_79»«any»«_82»’
+comment_multiLine [ _83  any* _85] =‛«_83»«any»«_85»’
+tokens [ token*] = ‛«token»’
+token [ _86] = ‛«_86»’
+operator [ _96] = ‛«_96»’
+punctuation [ _101] = ‛«_101»’
+NemptyListOf [ elem _102+] = ‛«elem»«_102»’
+NemptyListOf2 [ sep elem] = ‛«sep»«elem»’
 
-  Seq [Iter*] = ‛«Iter»’
-
-  Iter_star [Pred _suffix] = ‛«Pred»«_suffix»’
-  Iter_plus [Pred _suffix] = ‛«Pred»«_suffix»’
-  Iter_opt [Pred _suffix] = ‛«Pred»«_suffix»’
-  Iter [Pred] = ‛«Pred»’
-
-  Pred_not [_prefix Lex] = ‛’
-  Pred_lookahead [_prefix Lex] = ‛_la_«Lex»’
-  Pred [Lex] = ‛«Lex»’
-
-  Lex_lex [_octothorpe Base] = ‛«Base»’
-  Lex [Base] = ‛«Base»’
-
-  Base_application [ident Params] = ‛❍\«⎨getn ("_")»\»’
-  Base_simple [ident] = ‛❍«ident»’
-  Base_range [first _dd second] = ‛❍\«⎨getn ("_")»\»’
-  Base_terminal [terminal] = ‛❍«terminal»’
-  Base_parenalt [lb Seq OrSeq+ rb] = ‛❍\«⎨getn ("_")»\»’
-  Base_parenseq [lb Seq rb] = ‛❍«Seq»’
-
-  OrSeq [_or Seq] = ‛«_or»«Seq»’
-
-  ruleDescr [lb ruleDescrText rb] = ‛«lb»«ruleDescrText»«rb»’
-  ruleDescrText [cs*] = ‛«cs»’
-
-  caseName [_dd ws* name ws2* newlineOrRb] = ‛«name»’
-
-  name [nameFirst nameRest*] = ‛\««nameFirst»«nameRest»\»’
-
-  nameFirst [c] = ‛«c»’
-  nameRest [c] = ‛«c»’
-
-  ident [name] = ‛«name»’
-
-  terminal [lq terminalChar* rq] = ‛\«⎨getn ("_")»\»’
-
-  oneCharTerminal [lq terminalChar rq] = ‛\«⎨getn ("_")»\»’
-
-  terminalChar [c] = ‛«c»’
-
-  escapeChar_backslash [c] = ‛«c»’
-  escapeChar_doubleQuote [c] = ‛«c»’
-  escapeChar_singleQuote [c] = ‛«c»’
-  escapeChar_backspace [c] = ‛«c»’
-  escapeChar_lineFeed [c] = ‛«c»’
-  escapeChar_carriageReturn [c] = ‛«c»’
-  escapeChar_tab [c] = ‛«c»’
-  escapeChar_unicodeCodePoint [lb h1 h2? h3? h4? h5? h6? rb] = ‛«lb»«h1»«h2»«h3»«h4»«h5»«h6»«rb»’
-  escapeChar_unicodeEscape [lb h1 h2 h3 h4] = ‛«lb»«h1»«h2»«h3»«h4»’
-  escapeChar_hexEscape [lb h1 h2] = ‛«lb»«h1»«h2»’
-
-  comment_singleLine [_ss cs* newlineOrEnd] = ‛«_ss»«cs»’
-  comment_multiLine [_slst cs* _stsl] = ‛«_slst»«cs»«_stsl»’
-
-  tokens [token*] = ‛«token»’
-
-  token [tok] = ‛«tok»’
-  operator [op] = ‛«op»’
-  punctuation [punc] = ‛«punc»’
-
-  NemptyListOf [elem sepelem+] = ‛«elem»«sepelem»’
-  NemptyListOf2 [sep elem] = ‛«elem»’
- 
-  NonemptyListOf [elem sep+ elem2+] = ‛«elem»«sep»«elem2»’ // needed due to ListOf<...>
+ListOf [seq sep] = ‛«seq»’
 }

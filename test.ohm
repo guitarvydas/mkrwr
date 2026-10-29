@@ -91,7 +91,7 @@ scn {
 
   ConstantListInnard =  Expr ","?
   
-  keyword = constant | reserved_keyword
+  keyword = (constant | reserved_keyword)
 
   reserved_keyword =
     | "𝒶𝓃𝒹" #space -- and
@@ -110,11 +110,11 @@ scn {
 
   tag = "‘" name "’"
   
-  reserved_unicode_character = "ˀ" | "ᵅ" | "." | "・" | "◦" | "≡" | "⇒" | "⇐"
+  reserved_unicode_character = ("ˀ" | "ᵅ" | "." | "・" | "◦" | "≡" | "⇒" | "⇐")
   EQ_op = "≡ˀ"
   DEF_op = ~EQ_op "≡"
 
-  unicode_superscript = "\u{00B0}" .. "\u{00BF}" | "\u{2070}" .. "\u{207F}"
+  unicode_superscript = ("\u{00B0}" .. "\u{00BF}" | "\u{2070}" .. "\u{207F}")
   unicode_subscript = "\u{2080}" .. "\u{209F}"
 
   string = "\"" (~"\"" any)* "\""
