@@ -10,13 +10,11 @@ function stripbrackets (s) {
 	.replace (/«/g, '')
 	.replace (/»/g, ''); } // strip out brackets «»
 function stripsuffixes (s) { return s.replace (/\+/g, '').replace (/\*/g, '').replace (/\?/g, ''); } // strip out suffixes (+/*/?)
-function blanks (s) { return s.replace (/❍/g, ' '); }
-function noblanks (s) { return s.replace (/❍/g, ''); }
 
 // rulename, args, rewrite are all variations on the same string...
-function asargs (s) { return blanks (stripbrackets (s)); } 
-function asrulename (s) { return blanks (stripbrackets (s)); } 
-function asrewrite (s) { return blanks (stripsuffixes (s)); }
+function asargs (s) { return stripbrackets (s); } 
+function asrulename (s) { return stripbrackets (s); } 
+function asrewrite (s) { return stripsuffixes (s); }
 
 function setrule (name, formals, desc) { rulename = name.trim (); formals = formals ; ruleDescr = desc ; return rulename; }
 function getrulename () { return rulename; }

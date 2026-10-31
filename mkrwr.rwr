@@ -12,7 +12,7 @@ RuleBody_seq [ _bar? TopLevelTermWithoutCaseName] =‛«_bar»«TopLevelTermWith
 
 TopLevelTermWithCaseName [ Seq caseName] = ‛\n⎨getrulename⎬_«caseName» [⎨asargs ‛«Seq»’⎬] = \‛⎨asrewrite ‛«Seq»’⎬\’’
 
-TopLevelTermWithoutCaseName [ Seq] = ‛\n⎨asrulename ‛⎨getrulename⎬’⎬ [⎨asargs ‛«Seq»’⎬] = \‛⎨asrewrite ‛«Seq»’⎬’
+TopLevelTermWithoutCaseName [ Seq] = ‛\n⎨asrulename ‛⎨getrulename⎬’⎬ [⎨asargs ‛«Seq»’⎬] = \‛⎨asrewrite ‛«Seq»’⎬\’’
 
 AltTopLevelTermWithCaseName [ _bar TopLevelTermWithCaseName] = ‛«_bar»«TopLevelTermWithCaseName»’
 
@@ -38,12 +38,12 @@ Pred_default [ Lex] =‛«Lex»’
 Lex_lex [ _25 Base] =‛«_25»«Base»’
 Lex_default [ Base] =‛«Base»’
 
-Base_application [ ident Params] =‛❍\«⎨getn ‛_’⎬\»’
-Base_simple [ ident] =‛❍«ident»’
-Base_range [ oneCharTerminal _34 oneCharTerminal2] =‛❍\«⎨getn ‛_’⎬\»’
-Base_terminal [ terminal] =‛❍«terminal»’
-Base_parenalt [ _35 Seq OrSeq+ _36] =‛❍\«⎨getn ‛_’⎬\»’
-Base_parenseq [ _37 Seq _38] =‛❍«Seq»’
+Base_application [ ident Params] =‛ \«⎨getn ‛_’⎬\»’
+Base_simple [ ident] =‛ «ident»’
+Base_range [ oneCharTerminal _34 oneCharTerminal2] =‛ \«⎨getn ‛_’⎬\»’
+Base_terminal [ terminal] =‛ «terminal»’
+Base_parenalt [ _35 Seq OrSeq+ _36] =‛ \«⎨getn ‛_’⎬\»’
+Base_parenseq [ _37 Seq _38] =‛ «Seq»’
 
 OrSeq [ _39 Seq] = ‛«_39»«Seq»’
 ruleDescr [ _40 ruleDescrText _41] = ‛«_40»«ruleDescrText»«_41»’
