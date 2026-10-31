@@ -16,7 +16,7 @@ function noblanks (s) { return s.replace (/❍/g, ''); }
 // rulename, args, rewrite are all variations on the same string...
 function asargs (s) { return blanks (stripbrackets (s)); } 
 function asrulename (s) { return blanks (stripbrackets (s)); } 
-function asrewrite (s) { return noblanks (stripsuffixes (s)); }
+function asrewrite (s) { return blanks (stripsuffixes (s)); }
 
 function setrule (name, formals, desc) { rulename = name.trim (); formals = formals ; ruleDescr = desc ; return rulename; }
 function getrulename () { return rulename; }
