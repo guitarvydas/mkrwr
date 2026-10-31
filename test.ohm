@@ -1,127 +1,129 @@
-scn {
-  Main = DI_Section Implementation_Section Type_Section
+Ohm {
 
-  DI_Section = "#" "DI" (Subroutine | GlobalVariable)+
-  Implementation_Section = "#" "implementation" Subroutine+
-  Type_Section = "#" "types" any+ end
+  Grammars
+    = Grammar*
 
-  Subroutine = "λ" name Formals Return_type? Scope
-  Scope = "⎨" ScopedNameDef? Action "⎬"
+  Grammar
+    = ident SuperGrammar? "{" Rule* "}"
 
-  GlobalVariable = name "⇐" Expr
+  SuperGrammar
+    = "<:" ident
+
+  Rule
+    = ident Formals? ruleDescr? "="  RuleBody  -- define
+    | ident Formals?            ":=" OverrideRuleBody  -- override
+    | ident Formals?            "+=" RuleBody  -- extend
+
+  RuleBody =
+    | "|"? TopLevelTermWithCaseName AltTopLevelTermWithCaseName+ -- toplevelcasebranch
+    | "|"? TopLevelTermWithoutCaseName ~"|" -- seq
+
+  TopLevelTermWithCaseName = Seq caseName
+  TopLevelTermWithoutCaseName = Seq
+
+  AltTopLevelTermWithCaseName = "|" TopLevelTermWithCaseName
+
+  OverrideRuleBody
+    = "|"? OverrideTopLevelTerm AltOverrideTopLevelTerm+
+
+  OverrideTopLevelTerm
+    = "..."  -- superSplice
+    | TopLevelTermWithoutCaseName -- default
+
+  AltOverrideTopLevelTerm = "|" OverrideTopLevelTerm
   
-  ScopedNameDef =
-    | ScopedSynonymDef -- synonym
-    | SlotAssignment -- assignslot
-  ScopedSynonymDef =
-    | StackDeconstruction DEF_op Expr -- deconstruction
-    | ScopedVarName DEF_op Expr -- varname
-  SlotAssignment =
-    | SlotReference (#"," SlotReference)* "⇐" Expr
-  SlotReference = name FieldRef_rec?
-  FieldRef_rec = "." name FieldRef_rec?
-  ScopedVarName = name
+  Formals
+    = "<" identcomma* ">"
 
-  Formals = "(" FormalName* ")"
-  FormalName = name ","?
-  
-  Return_type = "⇒" name ("," name)*
+  Params
+    = "<" Seqcomma* ">"
 
-  Action =
-    | Scope -- scope
-    | Choice -- choice
-    | Return -- return
-    | Fresh Action -- fresh
-    | "𝑎𝑠𝑠𝑒𝑟𝑡" Expr Action -- assert
-    | Call Action -- call
+  Seq
+    = Iter*
 
-  Fresh = name "ᵅ" Actuals
-  Predicate = name "ˀ" Actuals
+  identcomma = ident ","
+  Seqcomma = Seq ","
 
-  Return =  "⇒" Expr ("," Expr)*
+  Iter
+    = Pred "*"  -- star
+    | Pred "+"  -- plus
+    | Pred "?"  -- opt
+    | Pred      -- default
 
-  Call =
-    | Predicate -- pred
-    | name Actuals -- call
-  Actuals = "(" (tag? Expr ","?)* ")"
+  Pred
+    = "~" Lex  -- not
+    | "&" Lex  -- lookahead
+    | Lex      -- default
 
-  Choice = "⎡" ChoiceClause+ ElseClause? "⎦"
+  Lex
+    = "#" Base  -- lex
+    | Base      -- default
 
-  ChoiceClause = "・" Boolean_expr "◦" Action
-  ElseClause = "・" "◦" Action
+  Base
+    = ident  Params ~(ruleDescr? ("=" | ":=" | "+=")) -- application
+    | ident ~Params ~(ruleDescr? ("=" | ":=" | "+=")) -- simple
+    | oneCharTerminal ".." oneCharTerminal            -- range
+    | terminal                                        -- terminal
+    | "(" Seq OrSeq+ ")"                              -- parenalt
+    | "(" Seq ")"                                     -- parenseq
 
-  Boolean_expr = Expr
-  Expr =
-    | Expr "𝒶𝓃𝒹" Expr -- and
-    | "1" "+" Expr -- inc
-    | StackDeconstruction DEF_op Expr -- deconstruction_eq
-    | Fresh -- fresh
-    | Call_and_Await_Result -- call_and_await
-    | SlotReference EQ_op Expr -- slotrefeq
-    | name "ˀ" -- is_type
-    | Choice -- choice
-    | Expr "⫶" Expr -- comma_expr
-    | Call -- call
-    | StackCONStruction -- cons
-    | Expr "/" "𝓉ℴ𝓅" -- top
-    | Expr "/" "𝓇ℯ𝓂" -- rem
-    | constant -- const
-    | SlotReference -- slotref
+  OrSeq = "|" Seq
 
-  Call_and_Await_Result = Call
+  ruleDescr  (a rule description)
+    = "(" ruleDescrText ")"
 
-  StackDeconstruction =
-    | "[" "_" "|" Expr "]" -- cdr
-    | "[" StackTop "|" "_" "]" -- car
-    | "[" StackTop "|" Expr "]" -- cons
-  StackCONStruction = "[" StackTop "|" Expr "]"
+  ruleDescrText
+    = (~")" any)*
 
-  StackTop =
-    | "[" StackCONStruction "]" -- nested
-    | Expr -- simple
+  caseName
+    = "--" (~"\n" space)* name (~"\n" space)* ("\n" | &"}")
 
-  constant =
-    | "⟪" applySyntactic<ConstantListInnard>* "⟫" -- constantlist
-    | "𝓕𝒶𝓁𝓈ℯ" #space -- false
-    | "𝒯𝓇𝓊ℯ" #space -- true
-    | "𝜙" #space  -- nothing
-    | string -- string
-    | number -- number
-    | "⁼" name -- symbol
+  name  (a name)
+    = nameFirst nameRest*
 
-  ConstantListInnard =  Expr ","?
-  
-  keyword = (constant | reserved_keyword)
+  nameFirst
+    = ( "_" | letter )
 
-  reserved_keyword =
-    | "𝒶𝓃𝒹" #space -- and
-    | "𝒹ℯ𝒻𝓈𝓉𝓇𝓊𝒸𝓉" #space -- defstruct
-    | "⇒" #space -- defreturn
-    | "⇐" #space -- assignslot
-    | "≡ˀ" #space -- macroequiv
+  nameRest
+    = ( "_" | alnum )
 
-  name = ~keyword id
-  id = firstLetter followingLetter* #space?
-  firstLetter = ~reserved_unicode_character (letter | "'" | "-" | "?" | math_symbol | unicode_subscript | unicode_superscript)
-  followingLetter =
-    | firstLetter -- firstletter
-    | digit  -- digit
-  math_symbol = "\u{1d400}".."\u{1d7ff}"
+  ident  (an identifier)
+    = name
 
-  tag = "‘" name "’"
-  
-  reserved_unicode_character = ("ˀ" | "ᵅ" | "." | "・" | "◦" | "≡" | "⇒" | "⇐")
-  EQ_op = "≡ˀ"
-  DEF_op = ~EQ_op "≡"
+  terminal
+    = "\"" terminalChar* "\""
 
-  unicode_superscript = ("\u{00B0}" .. "\u{00BF}" | "\u{2070}" .. "\u{207F}")
-  unicode_subscript = "\u{2080}" .. "\u{209F}"
+  oneCharTerminal
+    = "\"" terminalChar "\""
 
-  string = "\"" (~"\"" any)* "\""
-  number = digit+
+  terminalChar
+    = ( escapeChar | ~"\\" ~"\"" ~"\n" "\u{0}".."\u{10FFFF}" )
 
-  jscomment = "//" (~#nl any)* #nl
-  nl = "\n"
-  space += jscomment
+  escapeChar  (an escape sequence)
+    = "\\\\"                                     -- backslash
+    | "\\\""                                     -- doubleQuote
+    | "\\\'"                                     -- singleQuote
+    | "\\b"                                      -- backspace
+    | "\\n"                                      -- lineFeed
+    | "\\r"                                      -- carriageReturn
+    | "\\t"                                      -- tab
+    | "\\u{" hexDigit hexDigit? hexDigit?
+             hexDigit? hexDigit? hexDigit? "}"   -- unicodeCodePoint
+    | "\\u" hexDigit hexDigit hexDigit hexDigit  -- unicodeEscape
+    | "\\x" hexDigit hexDigit                    -- hexEscape
+
+  space
+   += comment
+
+  comment
+    = "//" (~"\n" any)* &("\n" | end)  -- singleLine
+    | "/*" (~"*/" any)* "*/"  -- multiLine
+
+  tokens = token*
+
+  token = ( caseName | comment | ident | operator | punctuation | terminal | any )
+
+  operator = ( "<:" | "=" | ":=" | "+=" | "*" | "+" | "?" | "~" | "&" )
+
+  punctuation = ( "<" | ">" | "," | "--" )
 }
-
