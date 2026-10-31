@@ -15,27 +15,34 @@ Ohm {
     | ident Formals?            "+=" RuleBody  -- extend
 
   RuleBody =
-    | "|"? NemptyListOf<TopLevelTermWithCaseName, "|"> -- toplevelcasebranch
+    | "|"? TopLevelTermWithCaseName AltTopLevelTermWithCaseName+ -- toplevelcasebranch
     | "|"? TopLevelTermWithoutCaseName ~"|" -- seq
 
   TopLevelTermWithCaseName = Seq caseName
   TopLevelTermWithoutCaseName = Seq
 
+  AltTopLevelTermWithCaseName = "|" TopLevelTermWithCaseName
+
   OverrideRuleBody
-    = "|"? NemptyListOf<OverrideTopLevelTerm, "|">
+    = "|"? OverrideTopLevelTerm AltOverrideTopLevelTerm+
 
   OverrideTopLevelTerm
     = "..."  -- superSplice
     | TopLevelTermWithoutCaseName -- default
 
+  AltOverrideTopLevelTerm = "|" OverrideTopLevelTerm
+  
   Formals
-    = "<" ListOf<ident, ","> ">"
+    = "<" identcomma* ">"
 
   Params
-    = "<" ListOf<Seq, ","> ">"
+    = "<" Seqcomma* ">"
 
   Seq
     = Iter*
+
+  identcomma = ident ","
+  Seqcomma = Seq ","
 
   Iter
     = Pred "*"  -- star
@@ -75,12 +82,10 @@ Ohm {
     = nameFirst nameRest*
 
   nameFirst
-    = ( "_"
-    | letter )
+    = ( "_" | letter )
 
   nameRest
-    = ( "_"
-    | alnum )
+    = ( "_" | alnum )
 
   ident  (an identifier)
     = name
@@ -92,8 +97,7 @@ Ohm {
     = "\"" terminalChar "\""
 
   terminalChar
-    = ( escapeChar
-      | ~"\\" ~"\"" ~"\n" "\u{0}".."\u{10FFFF}" )
+    = ( escapeChar | ~"\\" ~"\"" ~"\n" "\u{0}".."\u{10FFFF}" )
 
   escapeChar  (an escape sequence)
     = "\\\\"                                     -- backslash
@@ -122,7 +126,4 @@ Ohm {
   operator = ( "<:" | "=" | ":=" | "+=" | "*" | "+" | "?" | "~" | "&" )
 
   punctuation = ( "<" | ">" | "," | "--" )
-
-  NemptyListOf<elem, sep> = elem NemptyListOf2<elem, sep>+
-  NemptyListOf2<elem, sep> = sep elem
 }

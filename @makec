@@ -26,7 +26,7 @@
 # use-case 3 just use the T2T tool to convert some text to some other text ("transmogrify")
 # if you only want to use the T2T tool, then comment out the above and use the following:
 output=/dev/stdout
-./pbp/t2t "${TARGET}" <"test.ohm" >$output
+./pbp/t2t "${TARGET}" <"mkrwr.ohm" >$output
 
 
 ############################

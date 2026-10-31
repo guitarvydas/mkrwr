@@ -3,71 +3,64 @@
 Grammars [ Grammar*] = ‛«Grammar»’
 Grammar [ ident SuperGrammar? _1 Rule* _2] = ‛«ident»«SuperGrammar»«_1»«Rule»«_2»’
 SuperGrammar [ _3 ident] = ‛«_3»«ident»’
-
 Rule_define [ ident Formals? ruleDescr? _4 RuleBody] =‛«ident»«Formals»«ruleDescr»«_4»«RuleBody»’
 Rule_override [ ident Formals? _5 OverrideRuleBody] =‛«ident»«Formals»«_5»«OverrideRuleBody»’
 Rule_extend [ ident Formals? _6 RuleBody] =‛«ident»«Formals»«_6»«RuleBody»’
-
-RuleBody_toplevelcasebranch [ _7? _9] =‛«_7»«_9»’
-RuleBody_seq [ _10? TopLevelTermWithoutCaseName] =‛«_10»«TopLevelTermWithoutCaseName»’
+RuleBody_toplevelcasebranch [ _7? TopLevelTermWithCaseName AltTopLevelTermWithCaseName+] =‛«_7»«TopLevelTermWithCaseName»«AltTopLevelTermWithCaseName»’
+RuleBody_seq [ _8? TopLevelTermWithoutCaseName] =‛«_8»«TopLevelTermWithoutCaseName»’
 TopLevelTermWithCaseName [ Seq caseName] = ‛«Seq»«caseName»’
 TopLevelTermWithoutCaseName [ Seq] = ‛«Seq»’
-OverrideRuleBody [ _12? _14] = ‛«_12»«_14»’
-
-OverrideTopLevelTerm_superSplice [ _15] =‛«_15»’
+AltTopLevelTermWithCaseName [ _10 TopLevelTermWithCaseName] = ‛«_10»«TopLevelTermWithCaseName»’
+OverrideRuleBody [ _11? OverrideTopLevelTerm AltOverrideTopLevelTerm+] = ‛«_11»«OverrideTopLevelTerm»«AltOverrideTopLevelTerm»’
+OverrideTopLevelTerm_superSplice [ _12] =‛«_12»’
 OverrideTopLevelTerm_default [ TopLevelTermWithoutCaseName] =‛«TopLevelTermWithoutCaseName»’
-Formals [ _16 _18 _19] = ‛«_16»«_18»«_19»’
-Params [ _20 _22 _23] = ‛«_20»«_22»«_23»’
+AltOverrideTopLevelTerm [ _13 OverrideTopLevelTerm] = ‛«_13»«OverrideTopLevelTerm»’
+Formals [ _14 identcomma* _15] = ‛«_14»«identcomma»«_15»’
+Params [ _16 Seqcomma* _17] = ‛«_16»«Seqcomma»«_17»’
 Seq [ Iter*] = ‛«Iter»’
-
-Iter_star [ Pred _24] =‛«Pred»«_24»’
-Iter_plus [ Pred _25] =‛«Pred»«_25»’
-Iter_opt [ Pred _26] =‛«Pred»«_26»’
+identcomma [ ident _18] = ‛«ident»«_18»’
+Seqcomma [ Seq _19] = ‛«Seq»«_19»’
+Iter_star [ Pred _20] =‛«Pred»«_20»’
+Iter_plus [ Pred _21] =‛«Pred»«_21»’
+Iter_opt [ Pred _22] =‛«Pred»«_22»’
 Iter_default [ Pred] =‛«Pred»’
-
-Pred_not [ _27 Lex] =‛«_27»«Lex»’
-Pred_lookahead [ _28 Lex] =‛«_28»«Lex»’
+Pred_not [ _23 Lex] =‛«_23»«Lex»’
+Pred_lookahead [ _24 Lex] =‛«_24»«Lex»’
 Pred_default [ Lex] =‛«Lex»’
-
-Lex_lex [ _29 Base] =‛«_29»«Base»’
+Lex_lex [ _25 Base] =‛«_25»«Base»’
 Lex_default [ Base] =‛«Base»’
-
 Base_application [ ident Params] =‛«ident»«Params»’
 Base_simple [ ident] =‛«ident»’
-Base_range [ oneCharTerminal _38 oneCharTerminal2] =‛«oneCharTerminal»«_38»«oneCharTerminal2»’
+Base_range [ oneCharTerminal _34 oneCharTerminal2] =‛«oneCharTerminal»«_34»«oneCharTerminal2»’
 Base_terminal [ terminal] =‛«terminal»’
-Base_parenalt [ _39 Seq OrSeq+ _40] =‛«_39»«Seq»«OrSeq»«_40»’
-Base_parenseq [ _41 Seq _42] =‛«_41»«Seq»«_42»’
-OrSeq [ _43 Seq] = ‛«_43»«Seq»’
-ruleDescr [ _44 ruleDescrText _45] = ‛«_44»«ruleDescrText»«_45»’
+Base_parenalt [ _35 Seq OrSeq+ _36] =‛«_35»«Seq»«OrSeq»«_36»’
+Base_parenseq [ _37 Seq _38] =‛«_37»«Seq»«_38»’
+OrSeq [ _39 Seq] = ‛«_39»«Seq»’
+ruleDescr [ _40 ruleDescrText _41] = ‛«_40»«ruleDescrText»«_41»’
 ruleDescrText [  any*] = ‛«any»’
-caseName [ _47  space* name  space2* _52] = ‛«_47»«space»«name»«space2»«_52»’
+caseName [ _43  space* name  space2* _48] = ‛«_43»«space»«name»«space2»«_48»’
 name [ nameFirst nameRest*] = ‛«nameFirst»«nameRest»’
-nameFirst [ _54] = ‛«_54»’
-nameRest [ _56] = ‛«_56»’
+nameFirst [ _50] = ‛«_50»’
+nameRest [ _52] = ‛«_52»’
 ident [ name] = ‛«name»’
-terminal [ _57 terminalChar* _58] = ‛«_57»«terminalChar»«_58»’
-oneCharTerminal [ _59 terminalChar _60] = ‛«_59»«terminalChar»«_60»’
-terminalChar [ _67] = ‛«_67»’
-
-escapeChar_backslash [ _68] =‛«_68»’
-escapeChar_doubleQuote [ _69] =‛«_69»’
-escapeChar_singleQuote [ _70] =‛«_70»’
-escapeChar_backspace [ _71] =‛«_71»’
-escapeChar_lineFeed [ _72] =‛«_72»’
-escapeChar_carriageReturn [ _73] =‛«_73»’
-escapeChar_tab [ _74] =‛«_74»’
-escapeChar_unicodeCodePoint [ _75 hexDigit hexDigit2? hexDigit3? hexDigit4? hexDigit5? hexDigit6? _76] =‛«_75»«hexDigit»«hexDigit2»«hexDigit3»«hexDigit4»«hexDigit5»«hexDigit6»«_76»’
-escapeChar_unicodeEscape [ _77 hexDigit hexDigit2 hexDigit3 hexDigit4] =‛«_77»«hexDigit»«hexDigit2»«hexDigit3»«hexDigit4»’
-escapeChar_hexEscape [ _78 hexDigit hexDigit2] =‛«_78»«hexDigit»«hexDigit2»’
+terminal [ _53 terminalChar* _54] = ‛«_53»«terminalChar»«_54»’
+oneCharTerminal [ _55 terminalChar _56] = ‛«_55»«terminalChar»«_56»’
+terminalChar [ _63] = ‛«_63»’
+escapeChar_backslash [ _64] =‛«_64»’
+escapeChar_doubleQuote [ _65] =‛«_65»’
+escapeChar_singleQuote [ _66] =‛«_66»’
+escapeChar_backspace [ _67] =‛«_67»’
+escapeChar_lineFeed [ _68] =‛«_68»’
+escapeChar_carriageReturn [ _69] =‛«_69»’
+escapeChar_tab [ _70] =‛«_70»’
+escapeChar_unicodeCodePoint [ _71 hexDigit hexDigit2? hexDigit3? hexDigit4? hexDigit5? hexDigit6? _72] =‛«_71»«hexDigit»«hexDigit2»«hexDigit3»«hexDigit4»«hexDigit5»«hexDigit6»«_72»’
+escapeChar_unicodeEscape [ _73 hexDigit hexDigit2 hexDigit3 hexDigit4] =‛«_73»«hexDigit»«hexDigit2»«hexDigit3»«hexDigit4»’
+escapeChar_hexEscape [ _74 hexDigit hexDigit2] =‛«_74»«hexDigit»«hexDigit2»’
 space [ comment] = ‛«comment»’
-
-comment_singleLine [ _79  any* _82] =‛«_79»«any»«_82»’
-comment_multiLine [ _83  any* _85] =‛«_83»«any»«_85»’
+comment_singleLine [ _75  any* _78] =‛«_75»«any»«_78»’
+comment_multiLine [ _79  any* _81] =‛«_79»«any»«_81»’
 tokens [ token*] = ‛«token»’
-token [ _86] = ‛«_86»’
-operator [ _96] = ‛«_96»’
-punctuation [ _101] = ‛«_101»’
-NemptyListOf [ elem _102+] = ‛«elem»«_102»’
-NemptyListOf2 [ sep elem] = ‛«sep»«elem»’
+token [ _82] = ‛«_82»’
+operator [ _92] = ‛«_92»’
+punctuation [ _97] = ‛«_97»’
 }
