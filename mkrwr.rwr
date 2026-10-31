@@ -1,16 +1,20 @@
 %rewrite Ohm {
 
 Grammars [ Grammar*] = ‛«Grammar»’
-Grammar [ ident SuperGrammar? _1 Rule* _2] = ‛«ident»«SuperGrammar»«_1»«Rule»«_2»’
+Grammar [ ident SuperGrammar? _1 Rule* _2] = ‛⎨asrulename ‛«ident»’⎬«SuperGrammar» {\n«Rule»\n}’
 SuperGrammar [ _3 ident] = ‛«_3»«ident»’
-Rule_define [ ident Formals? ruleDescr? _4 RuleBody] =‛«ident»«Formals»«ruleDescr»«_4»«RuleBody»’
-Rule_override [ ident Formals? _5 OverrideRuleBody] =‛«ident»«Formals»«_5»«OverrideRuleBody»’
-Rule_extend [ ident Formals? _6 RuleBody] =‛«ident»«Formals»«_6»«RuleBody»’
+Rule_define [ ident Formals? ruleDescr? _4 RuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛«ruleDescr»’⎬ «_4» «RuleBody»’
+Rule_override [ ident Formals? _5 OverrideRuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛’⎬ «_5»«OverrideRuleBody»’
+Rule_extend [ ident Formals? _6 RuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛’⎬ «_6» «RuleBody»’
 RuleBody_toplevelcasebranch [ _7? TopLevelTermWithCaseName AltTopLevelTermWithCaseName+] =‛«_7»«TopLevelTermWithCaseName»«AltTopLevelTermWithCaseName»’
+
 RuleBody_seq [ _8? TopLevelTermWithoutCaseName] =‛«_8»«TopLevelTermWithoutCaseName»’
-TopLevelTermWithCaseName [ Seq caseName] = ‛«Seq»«caseName»’
+
+TopLevelTermWithCaseName [ Seq caseName] = ‛\n⎨getrulename⎬_«caseName» [⎨asargs ‛«Seq»’⎬] = \‛⎨asrewrite ‛«Seq»’⎬\’’
+
 TopLevelTermWithoutCaseName [ Seq] = ‛«Seq»’
-AltTopLevelTermWithCaseName [ _10 TopLevelTermWithCaseName] = ‛«_10»«TopLevelTermWithCaseName»’
+
+AltTopLevelTermWithCaseName [ _bar TopLevelTermWithCaseName] = ‛«_bar»«TopLevelTermWithCaseName»’
 OverrideRuleBody [ _11? OverrideTopLevelTerm AltOverrideTopLevelTerm+] = ‛«_11»«OverrideTopLevelTerm»«AltOverrideTopLevelTerm»’
 OverrideTopLevelTerm_superSplice [ _12] =‛«_12»’
 OverrideTopLevelTerm_default [ TopLevelTermWithoutCaseName] =‛«TopLevelTermWithoutCaseName»’
@@ -29,22 +33,22 @@ Pred_lookahead [ _24 Lex] =‛«_24»«Lex»’
 Pred_default [ Lex] =‛«Lex»’
 Lex_lex [ _25 Base] =‛«_25»«Base»’
 Lex_default [ Base] =‛«Base»’
-Base_application [ ident Params] =‛«ident»«Params»’
-Base_simple [ ident] =‛«ident»’
-Base_range [ oneCharTerminal _34 oneCharTerminal2] =‛«oneCharTerminal»«_34»«oneCharTerminal2»’
-Base_terminal [ terminal] =‛«terminal»’
-Base_parenalt [ _35 Seq OrSeq+ _36] =‛«_35»«Seq»«OrSeq»«_36»’
-Base_parenseq [ _37 Seq _38] =‛«_37»«Seq»«_38»’
+Base_application [ ident Params] =‛❍\«⎨getn ‛_’⎬\»’
+Base_simple [ ident] =‛❍«ident»’
+Base_range [ oneCharTerminal _34 oneCharTerminal2] =‛❍\«⎨getn ‛_’⎬\»’
+Base_terminal [ terminal] =‛❍«terminal»’
+Base_parenalt [ _35 Seq OrSeq+ _36] =‛❍\«⎨getn ‛_’⎬\»’
+Base_parenseq [ _37 Seq _38] =‛❍«Seq»’
 OrSeq [ _39 Seq] = ‛«_39»«Seq»’
 ruleDescr [ _40 ruleDescrText _41] = ‛«_40»«ruleDescrText»«_41»’
 ruleDescrText [  any*] = ‛«any»’
-caseName [ _43  space* name  space2* _48] = ‛«_43»«space»«name»«space2»«_48»’
+caseName [ _43  space* name  space2* _48] = ‛«name»’
 name [ nameFirst nameRest*] = ‛«nameFirst»«nameRest»’
 nameFirst [ _50] = ‛«_50»’
 nameRest [ _52] = ‛«_52»’
 ident [ name] = ‛«name»’
-terminal [ _53 terminalChar* _54] = ‛«_53»«terminalChar»«_54»’
-oneCharTerminal [ _55 terminalChar _56] = ‛«_55»«terminalChar»«_56»’
+terminal [ _53 terminalChar* _54] = ‛ ⎨getn ‛_’⎬’
+oneCharTerminal [ _55 terminalChar _56] = ‛ ⎨getn ‛_’⎬’
 terminalChar [ _63] = ‛«_63»’
 escapeChar_backslash [ _64] =‛«_64»’
 escapeChar_doubleQuote [ _65] =‛«_65»’

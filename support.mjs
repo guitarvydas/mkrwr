@@ -18,7 +18,7 @@ function asargs (s) { return blanks (stripbrackets (s)); }
 function asrulename (s) { return blanks (stripbrackets (s)); } 
 function asrewrite (s) { return noblanks (stripsuffixes (s)); }
 
-function setrule (name, formals, desc) { rulename = name.trim (); formals = formals ; ruleDescr = desc ; return ""; }
+function setrule (name, formals, desc) { rulename = name.trim (); formals = formals ; ruleDescr = desc ; return rulename; }
 function getrulename () { return rulename; }
 function getformals () { return formals; }
 function getruleDescr () { return ruleDescr; }
