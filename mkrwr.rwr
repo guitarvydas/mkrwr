@@ -1,22 +1,25 @@
-%parameter eval1
+%parameter evalonce
 
 %rewrite Ohm {
 
 Grammars [ Grammar*] = ‛«Grammar»’
 Grammar [ ident SuperGrammar? _1 Rule* _2] = ‛⎨asrulename ‛«ident»’⎬«SuperGrammar» {\n«Rule»\n}’
 SuperGrammar [ _3 ident] = ‛«_3»«ident»’
-Rule_define [ ident Formals? ruleDescr? _eq RuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛«ruleDescr»’⎬ «_eq» «RuleBody»’
-Rule_override [ ident Formals? _5 OverrideRuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛’⎬ «_5»«OverrideRuleBody»’
-Rule_extend [ ident Formals? _6 RuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛’⎬ «_6» «RuleBody»’
+Rule_define [ ident Formals? ruleDescr? _eq RuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛«ruleDescr»’⎬«RuleBody»’
+Rule_override [ ident Formals? _5 OverrideRuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛’⎬«OverrideRuleBody»’
+Rule_extend [ ident Formals? _6 RuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛’⎬«RuleBody»’
 RuleBody_toplevelcasebranch [ _7? TopLevelTermWithCaseName AltTopLevelTermWithCaseName+] =‛«_7»«TopLevelTermWithCaseName»«AltTopLevelTermWithCaseName»’
 
 RuleBody_seq [ _bar? TopLevelTermWithoutCaseName] =‛«_bar»«TopLevelTermWithoutCaseName»’
 
-TopLevelTermWithCaseName [ Seq caseName] = ‛\n⎨getrulename⎬_«caseName» [⎨asargs ‛«Seq»’⎬] = \‛⎨asrewrite ‛«Seq»’⎬\’’
+TopLevelTermWithCaseName [ Seq caseName] =
+⎡ evalonce=‛«Seq»’
+  ‛\n⎨getrulename⎬_«caseName» [⎨asargs ‛⟪evalonce⟫’⎬] = \‛⎨asrewrite ‛⟪evalonce⟫’⎬\’’
+⎦
 
 TopLevelTermWithoutCaseName [ Seq] =
-⎡ eval1=‛«Seq»’
-  ‛\n{⟪eval1⟫}⎨asrulename ‛⎨getrulename⎬’⎬ [⎨asargs ‛⟪eval1⟫’⎬] = \‛⎨asrewrite ‛⟪eval1⟫’⎬\’’
+⎡ evalonce=‛«Seq»’
+  ‛\n⎨asrulename ‛⎨getrulename⎬’⎬ [⎨asargs ‛⟪evalonce⟫’⎬] = \‛⎨asrewrite ‛⟪evalonce⟫’⎬\’’
 ⎦
 AltTopLevelTermWithCaseName [ _bar TopLevelTermWithCaseName] = ‛«_bar»«TopLevelTermWithCaseName»’
 
@@ -57,7 +60,7 @@ name [ nameFirst nameRest*] = ‛\««nameFirst»«nameRest»\»’
 nameFirst [ _50] = ‛«_50»’
 nameRest [ _52] = ‛«_52»’
 ident [ name] = ‛«name»’
-terminal [ _53 terminalChar* _54] = ‛\«⎨getn ‛_T’⎬\»’
+terminal [ _53 terminalChar* _54] = ‛\«⎨getn ‛_’⎬\»’
 oneCharTerminal [ _55 terminalChar _56] = ‛\«⎨getn ‛_’⎬\»’
 terminalChar [ _63] = ‛«_63»’
 escapeChar_backslash [ _64] =‛«_64»’
