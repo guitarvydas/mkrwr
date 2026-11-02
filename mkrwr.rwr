@@ -3,7 +3,7 @@
 Grammars [ Grammar*] = ‛«Grammar»’
 Grammar [ ident SuperGrammar? _1 Rule* _2] = ‛⎨asrulename ‛«ident»’⎬«SuperGrammar» {\n«Rule»\n}’
 SuperGrammar [ _3 ident] = ‛«_3»«ident»’
-Rule_define [ ident Formals? ruleDescr? _4 RuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛«ruleDescr»’⎬ «_4» «RuleBody»’
+Rule_define [ ident Formals? ruleDescr? _eq RuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛«ruleDescr»’⎬ «_eq» «RuleBody»’
 Rule_override [ ident Formals? _5 OverrideRuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛’⎬ «_5»«OverrideRuleBody»’
 Rule_extend [ ident Formals? _6 RuleBody] =‛\n⎨setrule ‛«ident»’ ‛«Formals»’ ‛’⎬ «_6» «RuleBody»’
 RuleBody_toplevelcasebranch [ _7? TopLevelTermWithCaseName AltTopLevelTermWithCaseName+] =‛«_7»«TopLevelTermWithCaseName»«AltTopLevelTermWithCaseName»’
@@ -53,7 +53,7 @@ name [ nameFirst nameRest*] = ‛«nameFirst»«nameRest»’
 nameFirst [ _50] = ‛«_50»’
 nameRest [ _52] = ‛«_52»’
 ident [ name] = ‛«name»’
-terminal [ _53 terminalChar* _54] = ‛ ⎨getn ‛_’⎬’
+terminal [ _53 terminalChar* _54] = ‛\«⎨getn ‛_’⎬\»’
 oneCharTerminal [ _55 terminalChar _56] = ‛ ⎨getn ‛_’⎬’
 terminalChar [ _63] = ‛«_63»’
 escapeChar_backslash [ _64] =‛«_64»’
