@@ -1,3 +1,5 @@
+%parameter eval1
+
 %rewrite Ohm {
 
 Grammars [ Grammar*] = ‛«Grammar»’
@@ -12,8 +14,10 @@ RuleBody_seq [ _bar? TopLevelTermWithoutCaseName] =‛«_bar»«TopLevelTermWith
 
 TopLevelTermWithCaseName [ Seq caseName] = ‛\n⎨getrulename⎬_«caseName» [⎨asargs ‛«Seq»’⎬] = \‛⎨asrewrite ‛«Seq»’⎬\’’
 
-TopLevelTermWithoutCaseName [ Seq] = ‛\n⎨asrulename ‛⎨getrulename⎬’⎬ [⎨asargs ‛«Seq»’⎬] = \‛⎨asrewrite ‛«Seq»’⎬\’’
-
+TopLevelTermWithoutCaseName [ Seq] =
+⎡ eval1=‛«Seq»’
+  ‛\n{⟪eval1⟫}⎨asrulename ‛⎨getrulename⎬’⎬ [⎨asargs ‛⟪eval1⟫’⎬] = \‛⎨asrewrite ‛⟪eval1⟫’⎬\’’
+⎦
 AltTopLevelTermWithCaseName [ _bar TopLevelTermWithCaseName] = ‛«_bar»«TopLevelTermWithCaseName»’
 
 OverrideRuleBody [ _11? OverrideTopLevelTerm AltOverrideTopLevelTerm+] = ‛«_11»«OverrideTopLevelTerm»«AltOverrideTopLevelTerm»’
@@ -49,12 +53,12 @@ OrSeq [ _39 Seq] = ‛«_39»«Seq»’
 ruleDescr [ _40 ruleDescrText _41] = ‛«_40»«ruleDescrText»«_41»’
 ruleDescrText [  any*] = ‛«any»’
 caseName [ _43  space* name  space2* _48] = ‛«name»’
-name [ nameFirst nameRest*] = ‛«nameFirst»«nameRest»’
+name [ nameFirst nameRest*] = ‛\««nameFirst»«nameRest»\»’
 nameFirst [ _50] = ‛«_50»’
 nameRest [ _52] = ‛«_52»’
 ident [ name] = ‛«name»’
-terminal [ _53 terminalChar* _54] = ‛\«⎨getn ‛_’⎬\»’
-oneCharTerminal [ _55 terminalChar _56] = ‛ ⎨getn ‛_’⎬’
+terminal [ _53 terminalChar* _54] = ‛\«⎨getn ‛_T’⎬\»’
+oneCharTerminal [ _55 terminalChar _56] = ‛\«⎨getn ‛_’⎬\»’
 terminalChar [ _63] = ‛«_63»’
 escapeChar_backslash [ _64] =‛«_64»’
 escapeChar_doubleQuote [ _65] =‛«_65»’
