@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # @make must export TOOLWD, before calling this script ("@defc")
 export WD="${TOOLWD}" # synonym for TOOLWD, sometimes it makes more sense to think in terms of WD, sometimes in terms of TOOLWD
 export PBP="${WD}/pbp"
@@ -11,6 +12,6 @@ export T2TLIBD="${PBP}/t2td/lib"
 # For use at a sub-level (@makec is called with 3 args), @makec must override CALLERPATH and TARGET
 export CALLERPATH="${TOOLWD}"
 export TRANSMOGRIFIER="<customize this>"
-export TARGET="mkrwr"
+export TARGET="${CALLERPATH}/mkrwr"
 export SRC_EXTENSION="<customize this>"
 export DEST_EXTENSION="<customize this>"
